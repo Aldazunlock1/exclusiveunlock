@@ -10,9 +10,8 @@ from flask import Flask, request
 
 # =================== CONFIGURACIÓN ===================
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "8219926342:AAGb9IRXThYg5AvC8up5caAUxYv9SbaMTAw")
-API_KEY = os.environ.get("API_KEY", "Z2zMr-ZLlCh-NpNQj-7XoJh-ywo6g-cFUdo")
+API_KEY = os.environ.get("API_KEY", "z4o3T-525kS-Jbz8M-98WY3-CCZK2-HsST0")
 API_ENDPOINT = os.environ.get("API_ENDPOINT", "https://alpha.imeicheck.com/api/php-api/create")
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
 PORT = int(os.environ.get("PORT", 5000))
 
 AUTHORIZED_USERS = {
@@ -104,16 +103,20 @@ SERVICES = {
 }
 
 # =================== LOGGING ===================
+log_file = "ialdazcheck_bot.log"
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[logging.StreamHandler()]
+    handlers=[
+        logging.FileHandler(log_file, encoding='utf-8'),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger(__name__)
 
 # =================== BOT ===================
 bot = telebot.TeleBot(BOT_TOKEN, threaded=True)
-user_data = {}
+user_data = {}  # Datos temporales por usuario
 
 # =================== FUNCIONES AUXILIARES ===================
 def is_authorized(user_id):
@@ -168,60 +171,6 @@ def make_api_request(service_id, imei):
     except Exception as e:
         logger.error(f"❌ Error API: {e}")
         return {'status': 'failed', 'message': str(e)}
-
-def format_field_value(field_key, value):
-    """Formatea el valor de un campo específico con emojis apropiados"""
-    field_lower = field_key.lower()
-    value_lower = value.lower()
-    
-    # Campos que indican estado positivo cuando son "No"
-    if any(keyword in field_lower for keyword in ['demo unit', 'refurbished', 'replaced', 'replacement']):
-        if value_lower in ['no', 'false', '0']:
-            return '✅️No'
-        elif value_lower in ['yes', 'true', '1']:
-            return '⚠️Yes'
-    
-    # Find My iPhone
-    elif 'find my' in field_lower or field_lower == 'fmi':
-        if value_lower in ['on', 'enabled', 'active', 'yes']:
-            return '⚠️ON'
-        elif value_lower in ['off', 'disabled', 'inactive', 'no']:
-            return '✅️OFF'
-    
-    # iCloud Status
-    elif 'icloud' in field_lower:
-        if 'clean' in value_lower:
-            return '✅️Clean'
-        elif any(keyword in value_lower for keyword in ['lost', 'locked', 'stolen']):
-            return f'⚠️{value}'
-    
-    # SIM-Lock Status
-    elif 'sim-lock' in field_lower or 'simlock' in field_lower:
-        if 'locked' in value_lower:
-            return f'⚠️Locked'
-        elif 'unlocked' in value_lower or 'clean' in value_lower:
-            return f'✅️{value}'
-    
-    # Block/Blacklist Status
-    elif any(keyword in field_lower for keyword in ['block', 'blacklist']):
-        if any(keyword in value_lower for keyword in ['clean', 'not found', 'clear', 'no']):
-            return f'✅️{value}'
-        elif any(keyword in value_lower for keyword in ['blocked', 'reported', 'found', 'yes']):
-            return f'⚠️{value}'
-    
-    # Warranty Status
-    elif 'warranty' in field_lower:
-        return f'✅️{value}'
-    
-    # Coverage/Service Status
-    elif any(keyword in field_lower for keyword in ['coverage', 'service']):
-        if 'active' in value_lower:
-            return f'✅️{value}'
-        elif 'expired' in value_lower or 'inactive' in value_lower:
-            return f'⚠️{value}'
-    
-    # Valor por defecto sin emoji
-    return value
 
 def format_device_info(raw_data):
     """Formatea la información del dispositivo de manera estructurada con monoespacio"""
@@ -307,6 +256,60 @@ def format_device_info(raw_data):
         return clean_content
     
     return '\n'.join(formatted_lines)
+
+def format_field_value(field_key, value):
+    """Formatea el valor de un campo específico con emojis apropiados"""
+    field_lower = field_key.lower()
+    value_lower = value.lower()
+    
+    # Campos que indican estado positivo cuando son "No"
+    if any(keyword in field_lower for keyword in ['demo unit', 'refurbished', 'replaced', 'replacement']):
+        if value_lower in ['no', 'false', '0']:
+            return '✅️No'
+        elif value_lower in ['yes', 'true', '1']:
+            return '⚠️Yes'
+    
+    # Find My iPhone
+    elif 'find my' in field_lower or field_lower == 'fmi':
+        if value_lower in ['on', 'enabled', 'active', 'yes']:
+            return '⚠️ON'
+        elif value_lower in ['off', 'disabled', 'inactive', 'no']:
+            return '✅️OFF'
+    
+    # iCloud Status
+    elif 'icloud' in field_lower:
+        if 'clean' in value_lower:
+            return '✅️Clean'
+        elif any(keyword in value_lower for keyword in ['lost', 'locked', 'stolen']):
+            return f'⚠️{value}'
+    
+    # SIM-Lock Status
+    elif 'sim-lock' in field_lower or 'simlock' in field_lower:
+        if 'locked' in value_lower:
+            return f'⚠️Locked'
+        elif 'unlocked' in value_lower or 'clean' in value_lower:
+            return f'✅️{value}'
+    
+    # Block/Blacklist Status
+    elif any(keyword in field_lower for keyword in ['block', 'blacklist']):
+        if any(keyword in value_lower for keyword in ['clean', 'not found', 'clear', 'no']):
+            return f'✅️{value}'
+        elif any(keyword in value_lower for keyword in ['blocked', 'reported', 'found', 'yes']):
+            return f'⚠️{value}'
+    
+    # Warranty Status
+    elif 'warranty' in field_lower:
+        return f'✅️{value}'
+    
+    # Coverage/Service Status
+    elif any(keyword in field_lower for keyword in ['coverage', 'service']):
+        if 'active' in value_lower:
+            return f'✅️{value}'
+        elif 'expired' in value_lower or 'inactive' in value_lower:
+            return f'⚠️{value}'
+    
+    # Valor por defecto sin emoji
+    return value
 
 def format_success_response(service_name, imei, data):
     response = f"✅ **CONSULTA EXITOSA**\n\n"
@@ -492,7 +495,7 @@ def process_query(message, user_id, imei):
     bot.send_message(message.chat.id, response, parse_mode='Markdown', reply_markup=create_main_menu())
     del user_data[user_id]
 
-# =================== FLASK APP PARA WEBHOOK ===================
+# =================== WEBHOOK PARA RENDER ===================
 app = Flask(__name__)
 
 @app.route('/' + BOT_TOKEN, methods=['POST'])
@@ -504,43 +507,17 @@ def webhook():
 
 @app.route('/')
 def index():
-    return f"""
-    <html>
-    <head><title>IaldazCheck Bot</title></head>
-    <body style="font-family: Arial; text-align: center; margin-top: 100px;">
-        <h1>🤖 IaldazCheck Bot</h1>
-        <p>✅ Bot está activo y funcionando</p>
-        <p>🌐 Webhook configurado correctamente</p>
-        <hr>
-        <small>exclusiveunlock.com</small>
-    </body>
-    </html>
-    """
+    return "<h1>🤖 IaldazCheck Bot - Activo</h1>"
 
-@app.route('/health')
-def health():
-    return {"status": "ok", "bot": "IaldazCheck", "timestamp": datetime.now().isoformat()}
-
-# =================== INICIO PRINCIPAL ===================
 if __name__ == "__main__":
     logger.info("🚀 Iniciando IaldazCheck Bot...")
-    
-    # Modo Render (webhook)
-    if WEBHOOK_URL:
-        webhook_url = WEBHOOK_URL + BOT_TOKEN
-        try:
-            bot.remove_webhook()
-            time.sleep(1)
-            bot.set_webhook(url=webhook_url)
-            logger.info(f"📡 Webhook configurado: {webhook_url}")
-        except Exception as e:
-            logger.error(f"❌ Error configurando webhook: {e}")
-        
-        logger.info(f"🌐 Iniciando servidor Flask en puerto {PORT}")
+    if os.environ.get('WEBHOOK_URL'):
+        webhook_url = os.environ.get('WEBHOOK_URL') + BOT_TOKEN
+        bot.remove_webhook()
+        bot.set_webhook(url=webhook_url)
+        logger.info(f"📡 Webhook configurado: {webhook_url}")
         app.run(host='0.0.0.0', port=PORT, debug=False)
-    
-    # Modo local (polling)
     else:
-        logger.info("✅ Modo polling activado (desarrollo local)")
+        logger.info("✅ Modo polling activado")
         bot.remove_webhook()
         bot.polling(none_stop=True)

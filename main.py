@@ -17,7 +17,7 @@ PORT = int(os.environ.get("PORT", 5000))
 
 AUTHORIZED_USERS = {
     7655366089: {"role": "admin", "name": "Admin Principal", "credits": -1},
-    6269867784: {"role": "premium", "name": "Usuario Premium", "credits": 100},
+  6269867784: {"role": "premium", "name": "Usuario Premium", "credits": 8.8},
 }
 
 SERVICES = {

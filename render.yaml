@@ -4,10 +4,24 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python main.py
+    healthCheckPath: /health
     envVars:
       - key: BOT_TOKEN
         sync: false
-      - key: API_KEY
+      - key: API_KEY 
         sync: false
+      - key: API_ENDPOINT
+        value: https://alpha.imeicheck.com/api/php-api/create
       - key: WEBHOOK_URL
-        sync: false
+        fromService:
+          type: web
+          name: ialdazcheck-bot
+          property: url
+    scaling:
+      minInstances: 1
+      maxInstances: 1
+    autoDeploy: true
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1

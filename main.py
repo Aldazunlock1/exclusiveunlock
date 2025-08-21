@@ -7,6 +7,9 @@ import logging
 from datetime import datetime
 from telebot import types
 from flask import Flask, request
+import threading
+import signal
+import sys
 
 # =================== CONFIGURACIÓN ===================
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "8219926342:AAGb9IRXThYg5AvC8up5caAUxYv9SbaMTAw")
@@ -14,6 +17,9 @@ API_KEY = os.environ.get("API_KEY", "z4o3T-525kS-Jbz8M-98WY3-CCZK2-HsST0")
 API_ENDPOINT = os.environ.get("API_ENDPOINT", "https://alpha.imeicheck.com/api/php-api/create")
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "https://exclusiveunlock-lypd.onrender.com")
 PORT = int(os.environ.get("PORT", 5000))
+
+# Variable global para control del servidor
+server_running = True
 
 AUTHORIZED_USERS = {
     7655366089: {"role": "admin", "name": "Admin Principal", "credits": -1},
@@ -114,6 +120,27 @@ logger = logging.getLogger(__name__)
 # =================== BOT ===================
 bot = telebot.TeleBot(BOT_TOKEN, threaded=True)
 user_data = {}
+
+# =================== FUNCIONES DE CONTROL ===================
+def signal_handler(sig, frame):
+    global server_running
+    logger.info("🛑 Señal de parada recibida, cerrando servidor...")
+    server_running = False
+    sys.exit(0)
+
+def keep_alive():
+    """Función para mantener el bot activo y hacer health checks periódicos"""
+    while server_running:
+        try:
+            # Hacer un health check cada 5 minutos
+            time.sleep(300)
+            if server_running:
+                # Verificar que el bot sigue funcionando
+                bot.get_me()
+                logger.info("🔄 Bot health check: OK")
+        except Exception as e:
+            logger.warning(f"⚠️ Health check warning: {e}")
+            time.sleep(60)  # Esperar menos tiempo si hay error
 
 # =================== FUNCIONES AUXILIARES ===================
 def is_authorized(user_id):
@@ -495,15 +522,29 @@ def process_query(message, user_id, imei):
 # =================== FLASK APP PARA WEBHOOK ===================
 app = Flask(__name__)
 
+# Configurar manejo de señales
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
+
 @app.route('/' + BOT_TOKEN, methods=['POST'])
 def webhook():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    bot.process_new_updates([update])
-    return "OK"
+    if not server_running:
+        return "Service unavailable", 503
+    
+    try:
+        json_string = request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+        return "OK"
+    except Exception as e:
+        logger.error(f"❌ Error procesando webhook: {e}")
+        return "Error", 500
 
 @app.route('/')
 def index():
+    if not server_running:
+        return "Service starting...", 503
+        
     try:
         # Verificar estado del bot
         try:
@@ -526,6 +567,7 @@ def index():
             <title>IaldazCheck Bot - Status</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta http-equiv="refresh" content="300">
             <style>
                 body {{
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -603,6 +645,13 @@ def index():
                 .health-link:hover {{
                     background: #218838;
                 }}
+                .uptime {{
+                    background: #e8f4fd;
+                    padding: 15px;
+                    border-radius: 10px;
+                    margin: 20px 0;
+                    border-left: 4px solid #007bff;
+                }}
                 @media (max-width: 600px) {{
                     .info-grid {{
                         grid-template-columns: 1fr;
@@ -618,6 +667,11 @@ def index():
                 <div class="status">🤖</div>
                 <h1 class="title">IaldazCheck Bot</h1>
                 <p class="subtitle">Sistema de Verificación IMEI/Serial</p>
+                
+                <div class="uptime">
+                    <div class="info-label">Estado del Sistema</div>
+                    <div class="info-value">🟢 Operativo - Render.com</div>
+                </div>
                 
                 <div class="info-grid">
                     <div class="info-card">
@@ -639,16 +693,17 @@ def index():
                 </div>
                 
                 <div class="info-card" style="margin: 20px 0;">
-                    <div class="info-label">Modo</div>
-                    <div class="info-value">{"🌐 Webhook" if WEBHOOK_URL else "🔄 Polling"}</div>
+                    <div class="info-label">Modo de Operación</div>
+                    <div class="info-value">🌐 Webhook Mode - Optimizado para Render</div>
                 </div>
                 
                 <a href="/health" class="health-link">📊 Health Check API</a>
+                <a href="/ping" class="health-link" style="margin-left: 10px;">🏓 Ping Test</a>
                 
                 <div class="footer">
                     <strong>exclusiveunlock.com</strong><br>
                     Powered by Render.com<br>
-                    <small>Timestamp: {datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")}</small>
+                    <small>Last updated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")}</small>
                 </div>
             </div>
         </body>
@@ -678,17 +733,26 @@ def health():
         
         # Verificar conectividad del bot
         bot_status = "❌ Error"
+        bot_username = "Error"
         try:
             bot_info = bot.get_me()
             bot_status = "✅ Activo"
             bot_username = bot_info.username
         except Exception as e:
-            bot_username = "Error: " + str(e)[:50]
+            bot_username = f"Error: {str(e)[:50]}"
+        
+        # Estado del servidor
+        server_status = "✅ Activo" if server_running else "❌ Parado"
         
         # Respuesta completa
         response = {
-            "status": "ok",
+            "status": "healthy" if server_running and bot_status == "✅ Activo" else "degraded",
             "timestamp": datetime.now().isoformat(),
+            "server": {
+                "status": server_status,
+                "uptime": "Active",
+                "platform": "Render.com"
+            },
             "bot": {
                 "name": "IaldazCheck",
                 "status": bot_status,
@@ -699,7 +763,8 @@ def health():
             "config": config_status,
             "environment": {
                 "webhook_mode": bool(WEBHOOK_URL),
-                "port": PORT
+                "port": PORT,
+                "webhook_configured": bool(WEBHOOK_URL)
             }
         }
         
@@ -709,40 +774,118 @@ def health():
         return {
             "status": "error", 
             "message": str(e),
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "server_running": server_running
         }, 500
 
-# Agregar endpoint adicional para monitoreo
+# Nuevos endpoints para monitoreo mejorado
 @app.route('/status')
 def status():
     return {
         "online": True,
         "service": "IaldazCheck Bot",
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
+        "uptime": "Active",
+        "mode": "webhook"
     }, 200
 
 @app.route('/ping')
 def ping():
-    return "pong", 200
+    return {
+        "message": "pong",
+        "timestamp": datetime.now().isoformat(),
+        "status": "ok"
+    }, 200
+
+@app.route('/metrics')
+def metrics():
+    """Endpoint para métricas básicas"""
+    try:
+        return {
+            "bot_status": "active" if server_running else "inactive",
+            "services_count": sum(len(cat["services"]) for cat in SERVICES.values()),
+            "users_count": len(AUTHORIZED_USERS),
+            "active_sessions": len(user_data),
+            "timestamp": datetime.now().isoformat()
+        }, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+# Configurar el webhook de manera más robusta
+def configure_webhook():
+    """Configura el webhook con reintentos"""
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            webhook_url = f"{WEBHOOK_URL}/{BOT_TOKEN}"
+            logger.info(f"🔧 Intento {attempt + 1}: Configurando webhook en {webhook_url}")
+            
+            # Remover webhook existente
+            bot.remove_webhook()
+            time.sleep(2)
+            
+            # Configurar nuevo webhook
+            result = bot.set_webhook(url=webhook_url)
+            
+            if result:
+                logger.info("✅ Webhook configurado exitosamente")
+                return True
+            else:
+                logger.warning(f"⚠️ Intento {attempt + 1} falló")
+                
+        except Exception as e:
+            logger.error(f"❌ Error configurando webhook (intento {attempt + 1}): {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+    
+    logger.error("❌ No se pudo configurar el webhook después de varios intentos")
+    return False
+
 if __name__ == "__main__":
     logger.info("🚀 Iniciando IaldazCheck Bot...")
     
-    # Modo Render (webhook)
+    # Configurar webhook para Render
     if WEBHOOK_URL:
-        webhook_url = WEBHOOK_URL + BOT_TOKEN
-        try:
-            bot.remove_webhook()
-            time.sleep(1)
-            bot.set_webhook(url=webhook_url)
-            logger.info(f"📡 Webhook configurado: {webhook_url}")
-        except Exception as e:
-            logger.error(f"❌ Error configurando webhook: {e}")
+        logger.info("🌐 Modo Webhook (Render.com)")
+        
+        # Iniciar hilo para keep-alive
+        keep_alive_thread = threading.Thread(target=keep_alive, daemon=True)
+        keep_alive_thread.start()
+        logger.info("🔄 Keep-alive thread iniciado")
+        
+        # Configurar webhook
+        if configure_webhook():
+            logger.info(f"📡 Webhook activo en: {WEBHOOK_URL}/{BOT_TOKEN}")
+        else:
+            logger.warning("⚠️ Webhook no configurado, pero el servidor seguirá funcionando")
         
         logger.info(f"🌐 Iniciando servidor Flask en puerto {PORT}")
-        app.run(host='0.0.0.0', port=PORT, debug=False)
+        
+        # Configurar Flask para producción
+        app.config['DEBUG'] = False
+        app.config['TESTING'] = False
+        
+        try:
+            # Usar el servidor de desarrollo de Flask para Render
+            app.run(
+                host='0.0.0.0', 
+                port=PORT, 
+                debug=False,
+                threaded=True,
+                use_reloader=False
+            )
+        except Exception as e:
+            logger.error(f"❌ Error iniciando servidor: {e}")
+            server_running = False
     
-    # Modo local (polling)
+    # Modo local (polling) - para desarrollo
     else:
-        logger.info("✅ Modo polling activado (desarrollo local)")
-        bot.remove_webhook()
-        bot.polling(none_stop=True)
+        logger.info("🔄 Modo Polling (desarrollo local)")
+        try:
+            bot.remove_webhook()
+            logger.info("✅ Webhook removido, iniciando polling...")
+            bot.polling(none_stop=True, interval=1, timeout=60)
+        except Exception as e:
+            logger.error(f"❌ Error en polling: {e}")
+        finally:
+            server_running = False

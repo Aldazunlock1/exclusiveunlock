@@ -17,7 +17,7 @@ PORT = int(os.environ.get("PORT", 5000))
 
 AUTHORIZED_USERS = {
     7655366089: {"role": "admin", "name": "Admin Principal", "credits": -1},
-  6269867784: {"role": "premium", "name": "Usuario Premium", "credits": 8.8},
+    6269867784: {"role": "premium", "name": "Usuario Premium", "credits": 100},
 }
 
 SERVICES = {
@@ -504,24 +504,226 @@ def webhook():
 
 @app.route('/')
 def index():
-    return f"""
-    <html>
-    <head><title>IaldazCheck Bot</title></head>
-    <body style="font-family: Arial; text-align: center; margin-top: 100px;">
-        <h1>🤖 IaldazCheck Bot</h1>
-        <p>✅ Bot está activo y funcionando</p>
-        <p>🌐 Webhook configurado correctamente</p>
-        <hr>
-        <small>exclusiveunlock.com</small>
-    </body>
-    </html>
-    """
+    try:
+        # Verificar estado del bot
+        try:
+            bot_info = bot.get_me()
+            bot_status = "✅ Activo"
+            bot_name = bot_info.first_name
+            bot_username = f"@{bot_info.username}"
+        except Exception as e:
+            bot_status = "❌ Error"
+            bot_name = "IaldazCheck"
+            bot_username = f"Error: {str(e)[:30]}..."
+        
+        # Contar servicios
+        total_services = sum(len(cat["services"]) for cat in SERVICES.values())
+        
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>IaldazCheck Bot - Status</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+                body {{
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    margin: 0;
+                    padding: 20px;
+                    min-height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }}
+                .container {{
+                    background: white;
+                    padding: 40px;
+                    border-radius: 20px;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                    text-align: center;
+                    max-width: 500px;
+                    width: 100%;
+                }}
+                .status {{
+                    font-size: 2.5em;
+                    margin-bottom: 20px;
+                }}
+                .title {{
+                    color: #333;
+                    font-size: 2em;
+                    margin-bottom: 10px;
+                    font-weight: 300;
+                }}
+                .subtitle {{
+                    color: #666;
+                    font-size: 1.1em;
+                    margin-bottom: 30px;
+                }}
+                .info-grid {{
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin: 30px 0;
+                }}
+                .info-card {{
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 10px;
+                    border-left: 4px solid #667eea;
+                }}
+                .info-label {{
+                    font-size: 0.9em;
+                    color: #666;
+                    margin-bottom: 5px;
+                }}
+                .info-value {{
+                    font-size: 1.2em;
+                    color: #333;
+                    font-weight: 500;
+                }}
+                .footer {{
+                    margin-top: 30px;
+                    padding-top: 20px;
+                    border-top: 1px solid #eee;
+                    color: #666;
+                    font-size: 0.9em;
+                }}
+                .health-link {{
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 10px 20px;
+                    background: #28a745;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    transition: background 0.3s;
+                }}
+                .health-link:hover {{
+                    background: #218838;
+                }}
+                @media (max-width: 600px) {{
+                    .info-grid {{
+                        grid-template-columns: 1fr;
+                    }}
+                    .container {{
+                        padding: 20px;
+                    }}
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="status">🤖</div>
+                <h1 class="title">IaldazCheck Bot</h1>
+                <p class="subtitle">Sistema de Verificación IMEI/Serial</p>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-label">Estado del Bot</div>
+                        <div class="info-value">{bot_status}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Nombre</div>
+                        <div class="info-value">{bot_name}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Username</div>
+                        <div class="info-value">{bot_username}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Servicios</div>
+                        <div class="info-value">{total_services}</div>
+                    </div>
+                </div>
+                
+                <div class="info-card" style="margin: 20px 0;">
+                    <div class="info-label">Modo</div>
+                    <div class="info-value">{"🌐 Webhook" if WEBHOOK_URL else "🔄 Polling"}</div>
+                </div>
+                
+                <a href="/health" class="health-link">📊 Health Check API</a>
+                
+                <div class="footer">
+                    <strong>exclusiveunlock.com</strong><br>
+                    Powered by Render.com<br>
+                    <small>Timestamp: {datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")}</small>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+    
+    except Exception as e:
+        return f"""
+        <html>
+        <body style="font-family: Arial; text-align: center; margin-top: 100px; background: #f8f9fa;">
+            <h1>⚠️ Error en el Bot</h1>
+            <p>Error: {str(e)}</p>
+            <a href="/health">Ver Health Check</a>
+        </body>
+        </html>
+        """, 500
 
 @app.route('/health')
 def health():
-    return {"status": "ok", "bot": "IaldazCheck", "timestamp": datetime.now().isoformat()}
+    try:
+        # Verificar configuración básica
+        config_status = {
+            "bot_token": "✅ Configurado" if BOT_TOKEN else "❌ Faltante",
+            "api_key": "✅ Configurado" if API_KEY else "❌ Faltante",
+            "webhook_url": "✅ Configurado" if WEBHOOK_URL else "❌ Faltante"
+        }
+        
+        # Verificar conectividad del bot
+        bot_status = "❌ Error"
+        try:
+            bot_info = bot.get_me()
+            bot_status = "✅ Activo"
+            bot_username = bot_info.username
+        except Exception as e:
+            bot_username = "Error: " + str(e)[:50]
+        
+        # Respuesta completa
+        response = {
+            "status": "ok",
+            "timestamp": datetime.now().isoformat(),
+            "bot": {
+                "name": "IaldazCheck",
+                "status": bot_status,
+                "username": bot_username,
+                "services_count": sum(len(cat["services"]) for cat in SERVICES.values()),
+                "authorized_users": len(AUTHORIZED_USERS)
+            },
+            "config": config_status,
+            "environment": {
+                "webhook_mode": bool(WEBHOOK_URL),
+                "port": PORT
+            }
+        }
+        
+        return response, 200
+    
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": str(e),
+            "timestamp": datetime.now().isoformat()
+        }, 500
 
-# =================== INICIO PRINCIPAL ===================
+# Agregar endpoint adicional para monitoreo
+@app.route('/status')
+def status():
+    return {
+        "online": True,
+        "service": "IaldazCheck Bot",
+        "timestamp": datetime.now().isoformat()
+    }, 200
+
+@app.route('/ping')
+def ping():
+    return "pong", 200
 if __name__ == "__main__":
     logger.info("🚀 Iniciando IaldazCheck Bot...")
     

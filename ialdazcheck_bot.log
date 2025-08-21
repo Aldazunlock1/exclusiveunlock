@@ -1,0 +1,280 @@
+2025-08-21 21:06:00,818 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:06:00,818 [INFO] ✅ Modo polling activado
+2025-08-21 21:06:01,810 [ERROR] Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+2025-08-21 21:06:01,810 [ERROR] Exception traceback:
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 112, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 94, in run
+    task(*args, **kwargs)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+
+2025-08-21 21:06:05,199 [ERROR] Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+2025-08-21 21:06:05,200 [ERROR] Exception traceback:
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 112, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 94, in run
+    task(*args, **kwargs)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+
+2025-08-21 21:06:05,838 [ERROR] Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+2025-08-21 21:06:05,839 [ERROR] Exception traceback:
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 112, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 94, in run
+    task(*args, **kwargs)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+
+2025-08-21 21:06:09,978 [ERROR] Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+2025-08-21 21:06:09,979 [ERROR] Exception traceback:
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 112, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 94, in run
+    task(*args, **kwargs)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+
+2025-08-21 21:06:12,117 [ERROR] Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+2025-08-21 21:06:12,117 [ERROR] Exception traceback:
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 112, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 94, in run
+    task(*args, **kwargs)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+
+2025-08-21 21:06:16,256 [ERROR] Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+2025-08-21 21:06:16,257 [ERROR] Exception traceback:
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 112, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 94, in run
+    task(*args, **kwargs)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+
+2025-08-21 21:06:24,395 [ERROR] Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+2025-08-21 21:06:24,396 [ERROR] Exception traceback:
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 112, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 94, in run
+    task(*args, **kwargs)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+
+2025-08-21 21:06:40,534 [ERROR] Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+2025-08-21 21:06:40,535 [ERROR] Exception traceback:
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 112, in raise_exceptions
+    raise self.exception_info
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/util.py", line 94, in run
+    task(*args, **kwargs)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: can't use getUpdates method while webhook is active; use deleteWebhook to delete the webhook first
+
+2025-08-21 21:10:01,661 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:10:01,661 [INFO] ✅ Modo polling activado
+2025-08-21 21:10:10,151 [INFO] 🔔 /start recibido de usuario 7655366089
+2025-08-21 21:14:45,234 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:14:45,235 [INFO] ✅ Modo polling activado
+2025-08-21 21:14:49,343 [INFO] 🔔 /start recibido de usuario 7655366089
+2025-08-21 21:14:51,440 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:14:53,512 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:15:39,813 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone Status para IMEI 356760681319249
+2025-08-21 21:15:40,078 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=Z2zMr-ZLlCh-NpNQj-7XoJh-ywo6g-cFUdo&service=1&imei=356760681319249
+2025-08-21 21:15:40,646 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:18:20,828 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:18:21,934 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:18:24,282 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone Status para IMEI 356760681319249
+2025-08-21 21:18:24,549 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=Z2zMr-ZLlCh-NpNQj-7XoJh-ywo6g-cFUdo&service=1&imei=356760681319249
+2025-08-21 21:18:25,092 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:18:41,822 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:18:41,822 [INFO] ✅ Modo polling activado
+2025-08-21 21:18:45,659 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:18:48,035 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:18:50,295 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone Status para IMEI 356760681319249
+2025-08-21 21:18:50,578 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=z4o3T-525kS-Jbz8M-98WY3-CCZK2-HsST0&service=1&imei=356760681319249
+2025-08-21 21:18:53,615 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:29:13,481 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:29:13,481 [INFO] ✅ Modo polling activado
+2025-08-21 21:29:22,397 [INFO] 🔔 /start recibido de usuario 7655366089
+2025-08-21 21:29:24,464 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:29:27,313 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:29:35,503 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone [FMI] (ON/OFF) para IMEI 356760681319249
+2025-08-21 21:29:35,773 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=Z2zMr-ZLlCh-NpNQj-7XoJh-ywo6g-cFUdo&service=1&imei=356760681319249
+2025-08-21 21:29:36,301 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:32:51,726 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:32:51,727 [INFO] ✅ Modo polling activado
+2025-08-21 21:33:03,988 [INFO] 🔔 /start recibido de usuario 7655366089
+2025-08-21 21:33:05,846 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:33:15,038 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:33:18,780 [INFO] 🔘 Callback de usuario 7655366089: svc_2
+2025-08-21 21:33:20,629 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:33:24,749 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone [FMI] (ON/OFF) para IMEI 356760681319249
+2025-08-21 21:33:25,013 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=Z2zMr-ZLlCh-NpNQj-7XoJh-ywo6g-cFUdo&service=1&imei=356760681319249
+2025-08-21 21:33:25,485 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:34:48,338 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:34:48,339 [INFO] ✅ Modo polling activado
+2025-08-21 21:34:58,134 [INFO] 🔔 /start recibido de usuario 7655366089
+2025-08-21 21:34:59,857 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:35:02,579 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:35:05,138 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone [FMI] (ON/OFF) para IMEI 356760681319249
+2025-08-21 21:35:05,403 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=Z2zMr-ZLlCh-NpNQj-7XoJh-ywo6g-cFUdo&service=1&imei=356760681319249
+2025-08-21 21:35:05,905 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:35:39,883 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:35:39,884 [INFO] ✅ Modo polling activado
+2025-08-21 21:35:43,826 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:35:46,858 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:35:51,259 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone [FMI] (ON/OFF) para IMEI 356760681319249
+2025-08-21 21:35:51,523 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=z4o3T-525kS-Jbz8M-98WY3-CCZK2-HsST0&service=1&imei=356760681319249
+2025-08-21 21:35:55,062 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:36:02,278 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:36:08,632 [INFO] 🔘 Callback de usuario 7655366089: svc_22
+2025-08-21 21:36:13,266 [INFO] 🛠 Usuario 7655366089 realiza consulta Apple BASIC INFO (PRO) - new para IMEI 356760681319249
+2025-08-21 21:36:13,549 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=z4o3T-525kS-Jbz8M-98WY3-CCZK2-HsST0&service=22&imei=356760681319249
+2025-08-21 21:36:32,571 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:38:48,133 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:38:48,133 [INFO] ✅ Modo polling activado
+2025-08-21 21:38:52,876 [INFO] 🔘 Callback de usuario 7655366089: cat_apple
+2025-08-21 21:38:54,865 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:38:58,276 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone [FMI] (ON/OFF) para IMEI 356760681319249
+2025-08-21 21:38:58,546 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=z4o3T-525kS-Jbz8M-98WY3-CCZK2-HsST0&service=1&imei=356760681319249
+2025-08-21 21:39:01,527 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:43:26,921 [INFO] 🚀 Iniciando IaldazCheck Bot...
+2025-08-21 21:43:26,921 [INFO] ✅ Modo polling activado
+2025-08-21 21:43:34,370 [INFO] 🔘 Callback de usuario 7655366089: svc_1
+2025-08-21 21:43:37,671 [INFO] 🛠 Usuario 7655366089 realiza consulta Find My iPhone [FMI] (ON/OFF) para IMEI 356760681319249
+2025-08-21 21:43:38,242 [INFO] 🌐 API Request: https://alpha.imeicheck.com/api/php-api/create?key=z4o3T-525kS-Jbz8M-98WY3-CCZK2-HsST0&service=1&imei=356760681319249
+2025-08-21 21:43:40,441 [INFO] ✅ Consulta exitosa para usuario 7655366089
+2025-08-21 21:43:51,803 [INFO] 🔘 Callback de usuario 7655366089: credits
+2025-08-21 21:44:02,819 [INFO] 🔘 Callback de usuario 7655366089: credits
+2025-08-21 21:44:04,980 [INFO] 🔘 Callback de usuario 7655366089: main_menu
+2025-08-21 21:44:06,010 [INFO] 🔘 Callback de usuario 7655366089: help

@@ -33,7 +33,7 @@ activity_log = deque(maxlen=50)
 
 AUTHORIZED_USERS = {
     7655366089: {"role": "admin", "name": "Admin Principal", "credits": -1},
-    6269867784: {"role": "premium", "name": "Usuario Premium", "credits": 100},
+    6269867784: {"role": "premium", "name": "Usuario Premium", "credits": 80},
 }
 
 SERVICES = {

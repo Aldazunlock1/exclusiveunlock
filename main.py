@@ -14,11 +14,25 @@ from collections import deque
 import psutil
 
 # =================== CONFIGURACIÓN ===================
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8219926342:AAGb9IRXThYg5AvC8up5caAUxYv9SbaMTAw")
-API_KEY = os.environ.get("API_KEY", "z4o3T-525kS-Jbz8M-98WY3-CCZK2-HsST0")
+# CORRECCIÓN: Verificación obligatoria de variables de entorno
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+API_KEY = os.environ.get("API_KEY")
 API_ENDPOINT = os.environ.get("API_ENDPOINT", "https://alpha.imeicheck.com/api/php-api/create")
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "https://exclusiveunlock-lypd.onrender.com")
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL")
 PORT = int(os.environ.get("PORT", 5000))
+
+# Verificar variables críticas
+if not BOT_TOKEN:
+    print("❌ ERROR: BOT_TOKEN no encontrado en variables de entorno")
+    sys.exit(1)
+
+if not API_KEY:
+    print("❌ ERROR: API_KEY no encontrado en variables de entorno")
+    sys.exit(1)
+
+if not WEBHOOK_URL:
+    print("❌ ERROR: WEBHOOK_URL no encontrado en variables de entorno")
+    sys.exit(1)
 
 # Variables globales para control y estadísticas
 server_running = True
@@ -154,7 +168,14 @@ def add_activity_log(user_id, action, details=""):
     activity_log.append(activity_entry)
 
 # =================== BOT ===================
-bot = telebot.TeleBot(BOT_TOKEN, threaded=True)
+# CORRECCIÓN: Manejo de errores en inicialización del bot
+try:
+    bot = telebot.TeleBot(BOT_TOKEN, threaded=True)
+    logger.info("✅ Bot inicializado correctamente")
+except Exception as e:
+    logger.error(f"❌ Error inicializando bot: {e}")
+    sys.exit(1)
+
 user_data = {}
 
 # =================== FUNCIONES DE CONTROL ===================
@@ -203,7 +224,28 @@ def get_system_stats():
             'disk_total': 0
         }
 
-# =================== FUNCIONES AUXILIARES (mismas que antes) ===================
+def verify_environment():
+    """Verifica que todas las variables de entorno estén configuradas"""
+    required_vars = {
+        'BOT_TOKEN': BOT_TOKEN,
+        'API_KEY': API_KEY,
+        'WEBHOOK_URL': WEBHOOK_URL
+    }
+    
+    missing = []
+    for var_name, var_value in required_vars.items():
+        if not var_value:
+            missing.append(var_name)
+            logger.error(f"❌ Variable de entorno faltante: {var_name}")
+    
+    if missing:
+        logger.error(f"❌ Variables faltantes: {', '.join(missing)}")
+        return False
+    
+    logger.info("✅ Todas las variables de entorno configuradas correctamente")
+    return True
+
+# =================== FUNCIONES AUXILIARES ===================
 def is_authorized(user_id):
     return user_id in AUTHORIZED_USERS
 
@@ -422,109 +464,123 @@ def edit_message(call, text, markup=None):
     except Exception as e:
         logger.warning(f"⚠️ Edit message failed: {e}")
 
-# =================== HANDLERS ===================
+# =================== HANDLERS CON MANEJO DE ERRORES ===================
 @bot.message_handler(commands=['start'])
 def start_command(message):
-    user_id = message.from_user.id
-    logger.info(f"🔔 /start recibido de usuario {user_id}")
-    add_activity_log(user_id, "START", "Usuario inició bot")
-    
-    if not is_authorized(user_id):
-        bot.send_message(message.chat.id, f"🔒 Acceso no autorizado. Tu ID: {user_id}", parse_mode='Markdown')
-        return
-    
-    user_info = get_user_info(user_id)
-    credits_text = "Ilimitados" if user_info["credits"] == -1 else str(user_info["credits"])
-    text = f"🤖 Bienvenido {user_info['name']} ({user_info['role'].title()})\n💎 Créditos: {credits_text}"
-    bot.send_message(message.chat.id, text, parse_mode='Markdown', reply_markup=create_main_menu())
+    try:
+        user_id = message.from_user.id
+        logger.info(f"🔔 /start recibido de usuario {user_id}")
+        add_activity_log(user_id, "START", "Usuario inició bot")
+        
+        if not is_authorized(user_id):
+            bot.send_message(message.chat.id, f"🔒 Acceso no autorizado. Tu ID: {user_id}", parse_mode='Markdown')
+            return
+        
+        user_info = get_user_info(user_id)
+        credits_text = "Ilimitados" if user_info["credits"] == -1 else str(user_info["credits"])
+        text = f"🤖 Bienvenido {user_info['name']} ({user_info['role'].title()})\n💎 Créditos: {credits_text}"
+        bot.send_message(message.chat.id, text, parse_mode='Markdown', reply_markup=create_main_menu())
+    except Exception as e:
+        logger.error(f"❌ Error en start_command: {e}")
+        try:
+            bot.send_message(message.chat.id, "❌ Error interno del bot. Intenta más tarde.")
+        except:
+            pass
 
 @bot.message_handler(commands=['cancel'])
 def cancel_command(message):
-    user_id = message.from_user.id
-    add_activity_log(user_id, "CANCEL", "Operación cancelada")
-    if user_id in user_data:
-        del user_data[user_id]
-    bot.send_message(message.chat.id, "❌ Operación cancelada", reply_markup=create_main_menu())
+    try:
+        user_id = message.from_user.id
+        add_activity_log(user_id, "CANCEL", "Operación cancelada")
+        if user_id in user_data:
+            del user_data[user_id]
+        bot.send_message(message.chat.id, "❌ Operación cancelada", reply_markup=create_main_menu())
+    except Exception as e:
+        logger.error(f"❌ Error en cancel_command: {e}")
 
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
-    user_id = message.from_user.id
-    if not is_authorized(user_id):
-        bot.send_message(message.chat.id, f"🔒 Acceso no autorizado. Tu ID: {user_id}")
-        return
-    
-    text = message.text.strip()
-    if user_id in user_data and user_data[user_id].get('waiting_for_imei'):
-        if not validate_imei(text):
-            bot.reply_to(message, "❌ Formato IMEI/Serial inválido. Intenta nuevamente o /cancel", parse_mode='Markdown')
+    try:
+        user_id = message.from_user.id
+        if not is_authorized(user_id):
+            bot.send_message(message.chat.id, f"🔒 Acceso no autorizado. Tu ID: {user_id}")
             return
-        process_query(message, user_id, text)
-    else:
-        bot.reply_to(message, "🤖 Usa /start para comenzar o selecciona una opción del menú", reply_markup=create_main_menu())
+        
+        text = message.text.strip()
+        if user_id in user_data and user_data[user_id].get('waiting_for_imei'):
+            if not validate_imei(text):
+                bot.reply_to(message, "❌ Formato IMEI/Serial inválido. Intenta nuevamente o /cancel", parse_mode='Markdown')
+                return
+            process_query(message, user_id, text)
+        else:
+            bot.reply_to(message, "🤖 Usa /start para comenzar o selecciona una opción del menú", reply_markup=create_main_menu())
+    except Exception as e:
+        logger.error(f"❌ Error en handle_message: {e}")
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call):
-    user_id = call.from_user.id
-    if not is_authorized(user_id):
-        bot.answer_callback_query(call.id, "🔒 No autorizado")
-        return
-    
-    data = call.data
-    logger.info(f"🔘 Callback de usuario {user_id}: {data}")
-    
-    if data == "main_menu":
-        user_info = get_user_info(user_id)
-        credits_text = "Ilimitados" if user_info["credits"] == -1 else str(user_info["credits"])
-        text = f"🤖 {user_info['name']} ({user_info['role'].title()})\n💎 Créditos: {credits_text}"
-        edit_message(call, text, create_main_menu())
+    try:
+        user_id = call.from_user.id
+        if not is_authorized(user_id):
+            bot.answer_callback_query(call.id, "🔒 No autorizado")
+            return
         
-    elif data.startswith("cat_"):
-        category_key = data.split("_", 1)[1]
-        add_activity_log(user_id, "BROWSE", f"Categoría: {category_key}")
-        if category_key in SERVICES:
-            category = SERVICES[category_key]
-            text = f"{category['emoji']} **{category['name']}**\n\nSelecciona un servicio:"
-            edit_message(call, text, create_category_menu(category_key))
-    
-    elif data.startswith("svc_"):
-        service_id = data.split("_", 1)[1]
-        service_info = None
-        for category in SERVICES.values():
-            if service_id in category["services"]:
-                service_info = category["services"][service_id]
-                break
+        data = call.data
+        logger.info(f"🔘 Callback de usuario {user_id}: {data}")
         
-        if service_info:
-            add_activity_log(user_id, "SELECT", f"Servicio: {service_info['name']}")
-            if not has_credits(user_id, service_info["credits"]):
-                bot.answer_callback_query(call.id, "❌ Créditos insuficientes")
-                return
+        if data == "main_menu":
+            user_info = get_user_info(user_id)
+            credits_text = "Ilimitados" if user_info["credits"] == -1 else str(user_info["credits"])
+            text = f"🤖 {user_info['name']} ({user_info['role'].title()})\n💎 Créditos: {credits_text}"
+            edit_message(call, text, create_main_menu())
             
-            user_data[user_id] = {
-                'service_id': service_id,
-                'service_name': service_info['name'],
-                'credits_required': service_info['credits'],
-                'waiting_for_imei': True
-            }
+        elif data.startswith("cat_"):
+            category_key = data.split("_", 1)[1]
+            add_activity_log(user_id, "BROWSE", f"Categoría: {category_key}")
+            if category_key in SERVICES:
+                category = SERVICES[category_key]
+                text = f"{category['emoji']} **{category['name']}**\n\nSelecciona un servicio:"
+                edit_message(call, text, create_category_menu(category_key))
+        
+        elif data.startswith("svc_"):
+            service_id = data.split("_", 1)[1]
+            service_info = None
+            for category in SERVICES.values():
+                if service_id in category["services"]:
+                    service_info = category["services"][service_id]
+                    break
             
-            text = f"🔍 **{service_info['name']}**\n\n"
-            text += f"💳 Costo: {service_info['credits']} créditos\n"
-            text += f"📝 {service_info['desc']}\n\n"
-            text += "📱 Envía el IMEI/Serial número:"
-            
-            bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
-    
-    elif data == "credits":
-        user_info = get_user_info(user_id)
-        add_activity_log(user_id, "CHECK_CREDITS", f"Créditos: {user_info['credits']}")
-        credits_text = "Ilimitados ♾️" if user_info["credits"] == -1 else f"{user_info['credits']} 💎"
-        text = f"💳 **MIS CRÉDITOS**\n\n👤 Usuario: {user_info['name']}\n🏆 Rol: {user_info['role'].title()}\n💎 Créditos: {credits_text}"
-        edit_message(call, text, types.InlineKeyboardMarkup().add(
-            types.InlineKeyboardButton("🔙 Menú Principal", callback_data="main_menu")))
-    
-    elif data == "help":
-        add_activity_log(user_id, "HELP", "Solicitó ayuda")
-        text = """❓ **AYUDA**
+            if service_info:
+                add_activity_log(user_id, "SELECT", f"Servicio: {service_info['name']}")
+                if not has_credits(user_id, service_info["credits"]):
+                    bot.answer_callback_query(call.id, "❌ Créditos insuficientes")
+                    return
+                
+                user_data[user_id] = {
+                    'service_id': service_id,
+                    'service_name': service_info['name'],
+                    'credits_required': service_info['credits'],
+                    'waiting_for_imei': True
+                }
+                
+                text = f"🔍 **{service_info['name']}**\n\n"
+                text += f"💳 Costo: {service_info['credits']} créditos\n"
+                text += f"📝 {service_info['desc']}\n\n"
+                text += "📱 Envía el IMEI/Serial número:"
+                
+                bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
+        
+        elif data == "credits":
+            user_info = get_user_info(user_id)
+            add_activity_log(user_id, "CHECK_CREDITS", f"Créditos: {user_info['credits']}")
+            credits_text = "Ilimitados ♾️" if user_info["credits"] == -1 else f"{user_info['credits']} 💎"
+            text = f"💳 **MIS CRÉDITOS**\n\n👤 Usuario: {user_info['name']}\n🏆 Rol: {user_info['role'].title()}\n💎 Créditos: {credits_text}"
+            edit_message(call, text, types.InlineKeyboardMarkup().add(
+                types.InlineKeyboardButton("🔙 Menú Principal", callback_data="main_menu")))
+        
+        elif data == "help":
+            add_activity_log(user_id, "HELP", "Solicitó ayuda")
+            text = """❓ **AYUDA**
 
 🔹 Selecciona una categoría de servicios
 🔹 Elige el servicio que necesitas
@@ -536,41 +592,56 @@ def handle_callback(call):
 • Serial: 8-20 caracteres
 
 ⚠️ Los créditos solo se debitan si la consulta es exitosa"""
-        edit_message(call, text, types.InlineKeyboardMarkup().add(
-            types.InlineKeyboardButton("🔙 Menú Principal", callback_data="main_menu")))
-    
-    bot.answer_callback_query(call.id)
+            edit_message(call, text, types.InlineKeyboardMarkup().add(
+                types.InlineKeyboardButton("🔙 Menú Principal", callback_data="main_menu")))
+        
+        bot.answer_callback_query(call.id)
+    except Exception as e:
+        logger.error(f"❌ Error en handle_callback: {e}")
+        try:
+            bot.answer_callback_query(call.id, "❌ Error interno")
+        except:
+            pass
 
 def process_query(message, user_id, imei):
-    data = user_data[user_id]
-    service_id = data['service_id']
-    service_name = data['service_name']
-    credits_required = data['credits_required']
-    
-    logger.info(f"🛠 Usuario {user_id} realiza consulta {service_name} para IMEI {imei[:4]}***")
-    add_activity_log(user_id, "QUERY", f"Servicio: {service_name}, IMEI: {imei[:4]}***")
-    
-    if not has_credits(user_id, credits_required):
-        bot.reply_to(message, "❌ Créditos insuficientes")
+    try:
+        data = user_data[user_id]
+        service_id = data['service_id']
+        service_name = data['service_name']
+        credits_required = data['credits_required']
+        
+        logger.info(f"🛠 Usuario {user_id} realiza consulta {service_name} para IMEI {imei[:4]}***")
+        add_activity_log(user_id, "QUERY", f"Servicio: {service_name}, IMEI: {imei[:4]}***")
+        
+        if not has_credits(user_id, credits_required):
+            bot.reply_to(message, "❌ Créditos insuficientes")
+            del user_data[user_id]
+            return
+        
+        processing_msg = bot.reply_to(message, f"⏳ Procesando {service_name}...", parse_mode='Markdown')
+        result = make_api_request(service_id, imei)
+        
+        if result['status'] == 'success':
+            update_credits(user_id, credits_required)
+            response = format_success_response(service_name, imei, result['data'])
+            logger.info(f"✅ Consulta exitosa para usuario {user_id}")
+            add_activity_log(user_id, "SUCCESS", f"Consulta exitosa: {service_name}")
+        else:
+            response = format_error_response(service_name, imei, result.get('message', 'Error desconocido'))
+            logger.warning(f"❌ Consulta fallida para usuario {user_id}: {result.get('message')}")
+            add_activity_log(user_id, "ERROR", f"Consulta fallida: {result.get('message', 'Error')}")
+        
+        bot.edit_message_text("✅ Procesamiento completado", message.chat.id, processing_msg.message_id)
+        bot.send_message(message.chat.id, response, parse_mode='Markdown', reply_markup=create_main_menu())
         del user_data[user_id]
-        return
-    
-    processing_msg = bot.reply_to(message, f"⏳ Procesando {service_name}...", parse_mode='Markdown')
-    result = make_api_request(service_id, imei)
-    
-    if result['status'] == 'success':
-        update_credits(user_id, credits_required)
-        response = format_success_response(service_name, imei, result['data'])
-        logger.info(f"✅ Consulta exitosa para usuario {user_id}")
-        add_activity_log(user_id, "SUCCESS", f"Consulta exitosa: {service_name}")
-    else:
-        response = format_error_response(service_name, imei, result.get('message', 'Error desconocido'))
-        logger.warning(f"❌ Consulta fallida para usuario {user_id}: {result.get('message')}")
-        add_activity_log(user_id, "ERROR", f"Consulta fallida: {result.get('message', 'Error')}")
-    
-    bot.edit_message_text("✅ Procesamiento completado", message.chat.id, processing_msg.message_id)
-    bot.send_message(message.chat.id, response, parse_mode='Markdown', reply_markup=create_main_menu())
-    del user_data[user_id]
+    except Exception as e:
+        logger.error(f"❌ Error en process_query: {e}")
+        try:
+            bot.send_message(message.chat.id, "❌ Error procesando la consulta. Intenta más tarde.", reply_markup=create_main_menu())
+            if user_id in user_data:
+                del user_data[user_id]
+        except:
+            pass
 
 # =================== FLASK APP CON PANEL AVANZADO ===================
 app = Flask(__name__)
@@ -987,6 +1058,7 @@ PANEL_TEMPLATE = """
                             <li><a href="/metrics" target="_blank">/metrics</a> - Métricas</li>
                             <li><a href="/api/logs" target="_blank">/api/logs</a> - Logs JSON</li>
                             <li><a href="/api/stats" target="_blank">/api/stats</a> - Estadísticas</li>
+                            <li><a href="/debug" target="_blank">/debug</a> - Debug Info</li>
                         </ul>
                     </div>
                 </div>
@@ -1100,7 +1172,8 @@ PANEL_TEMPLATE = """
 </html>
 """
 
-@app.route('/' + BOT_TOKEN, methods=['POST'])
+# CORRECCIÓN: Webhook con ruta segura
+@app.route('/webhook', methods=['POST'])
 def webhook():
     if not server_running:
         return "Service unavailable", 503
@@ -1109,9 +1182,12 @@ def webhook():
         json_string = request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
-        return "OK"
+        logger.info("✅ Webhook procesado exitosamente")
+        return "OK", 200
     except Exception as e:
         logger.error(f"❌ Error procesando webhook: {e}")
+        global error_count
+        error_count += 1
         return "Error", 500
 
 @app.route('/')
@@ -1296,7 +1372,6 @@ def test_bot():
 @app.route('/api/restart', methods=['POST'])
 def restart_bot():
     try:
-        # En un entorno de producción, esto podría reiniciar el proceso
         logger.info("🔄 Restart solicitado desde panel")
         return jsonify({
             "status": "success",
@@ -1365,13 +1440,47 @@ def metrics():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Configurar el webhook de manera más robusta
+@app.route('/debug')
+def debug_info():
+    """Endpoint para debugging"""
+    try:
+        # Verificar estado del bot
+        bot_info = bot.get_me()
+        webhook_info = bot.get_webhook_info()
+        
+        return jsonify({
+            "bot_info": {
+                "id": bot_info.id,
+                "username": bot_info.username,
+                "first_name": bot_info.first_name
+            },
+            "webhook_info": {
+                "url": webhook_info.url,
+                "has_custom_certificate": webhook_info.has_custom_certificate,
+                "pending_update_count": webhook_info.pending_update_count,
+                "last_error_date": str(webhook_info.last_error_date) if webhook_info.last_error_date else None,
+                "last_error_message": webhook_info.last_error_message,
+                "max_connections": webhook_info.max_connections,
+                "allowed_updates": webhook_info.allowed_updates
+            },
+            "server_info": {
+                "server_running": server_running,
+                "uptime": str(datetime.now() - start_time).split('.')[0],
+                "request_count": request_count,
+                "error_count": error_count
+            }
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# CORRECCIÓN: Configurar el webhook de manera más robusta
 def configure_webhook():
     """Configura el webhook con reintentos"""
     max_retries = 3
     for attempt in range(max_retries):
         try:
-            webhook_url = f"{WEBHOOK_URL}/{BOT_TOKEN}"
+            # CORRECCIÓN: Usar ruta segura sin token
+            webhook_url = f"{WEBHOOK_URL}/webhook"
             logger.info(f"🔧 Intento {attempt + 1}: Configurando webhook en {webhook_url}")
             
             # Remover webhook existente
@@ -1398,6 +1507,11 @@ def configure_webhook():
 if __name__ == "__main__":
     logger.info("🚀 Iniciando IaldazCheck Bot con Panel Avanzado...")
     
+    # Verificar variables de entorno
+    if not verify_environment():
+        logger.error("❌ Configuración incompleta. Deteniendo bot.")
+        sys.exit(1)
+    
     # Configurar webhook para Render
     if WEBHOOK_URL:
         logger.info("🌐 Modo Webhook (Render.com)")
@@ -1409,9 +1523,9 @@ if __name__ == "__main__":
         
         # Configurar webhook
         if configure_webhook():
-            logger.info(f"📡 Webhook activo en: {WEBHOOK_URL}/{BOT_TOKEN}")
+            logger.info(f"📡 Webhook activo en: {WEBHOOK_URL}/webhook")
         else:
-            logger.warning("⚠️ Webhook no configurado, pero el servidor seguirá funcionando")
+            logger.error("❌ No se pudo configurar webhook. Continuando de todas formas...")
         
         logger.info(f"🌐 Iniciando servidor Flask con Panel en puerto {PORT}")
         logger.info(f"📊 Panel disponible en: {WEBHOOK_URL}")
@@ -1421,7 +1535,6 @@ if __name__ == "__main__":
         app.config['TESTING'] = False
         
         try:
-            # Usar el servidor de desarrollo de Flask para Render
             app.run(
                 host='0.0.0.0', 
                 port=PORT, 
@@ -1437,7 +1550,6 @@ if __name__ == "__main__":
     else:
         logger.info("🔄 Modo Polling (desarrollo local)")
         try:
-            # Iniciar Flask en un hilo separado para el panel
             flask_thread = threading.Thread(target=lambda: app.run(
                 host='0.0.0.0', 
                 port=PORT, 

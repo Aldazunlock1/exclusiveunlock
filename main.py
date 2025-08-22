@@ -47,7 +47,7 @@ activity_log = deque(maxlen=50)
 
 AUTHORIZED_USERS = {
     7655366089: {"role": "admin", "name": "Admin Principal", "credits": -1},
-    6269867784: {"role": "premium", "name": "Usuario Premium", "credits": 80},
+    6269867784: {"role": "premium", "name": "Usuario Premium", "credits": 8.60},
 }
 
 SERVICES = {
@@ -55,83 +55,84 @@ SERVICES = {
         "name": "🍎 Apple Services",
         "emoji": "🍎",
         "services": {
-            "1": {"name": "Find My iPhone [FMI] (ON/OFF)", "desc": "Verificar estado FMI", "credits": 1},
-            "2": {"name": "Warranty + Activation - PRO", "desc": "Info de garantía profesional", "credits": 2},
-            "3": {"name": "Apple FULL INFO [No Carrier]", "desc": "Información completa sin carrier", "credits": 7},
-            "4": {"name": "iCloud Clean/Lost Check", "desc": "Estado de iCloud limpio/perdido", "credits": 2},
-            "9": {"name": "SOLD BY + GSX - UPDATED", "desc": "Info de venta + GSX actualizado", "credits": 169},
-            "12": {"name": "GSX Next Tether + iOS", "desc": "GSX Carrier con iOS", "credits": 60},
-            "13": {"name": "Model + Color + Storage + FMI", "desc": "Modelo, color, almacenamiento y FMI", "credits": 2},
-            "18": {"name": "iMac FMI Status On/Off", "desc": "Estado FMI para iMac", "credits": 30},
-            "19": {"name": "Apple FULL INFO [+Carrier] B", "desc": "Info completa con carrier B", "credits": 12},
-            "20": {"name": "Apple SimLock Check", "desc": "Verificar bloqueo SIM", "credits": 2},
-            "22": {"name": "Apple BASIC INFO (PRO) - new", "desc": "Info básica profesional nueva", "credits": 4},
-            "23": {"name": "Apple Carrier Check (S2)", "desc": "Verificación de carrier S2", "credits": 4},
-            "33": {"name": "Replacement Status (Active Device)", "desc": "Estado de reemplazo dispositivo activo", "credits": 1},
-            "34": {"name": "Replaced Status (Original Device)", "desc": "Estado reemplazado dispositivo original", "credits": 1},
-            "39": {"name": "Apple FULL INFO [+Carrier] A", "desc": "Info completa con carrier A", "credits": 10},
-            "41": {"name": "MDM Status ON/OFF", "desc": "Estado MDM activado/desactivado", "credits": 22},
-            "46": {"name": "MDM Status + GSX Policy + FMI", "desc": "MDM + política GSX + FMI", "credits": 45},
-            "47": {"name": "Apple FULL + MDM + GSMA PRO", "desc": "Info completa + MDM + GSMA Pro", "credits": 75},
-            "50": {"name": "Apple SERIAL Info", "desc": "Info de serial Apple", "credits": 1},
-            "51": {"name": "Warranty + Activation [SN ONLY]", "desc": "Garantía + activación solo serial", "credits": 1},
-            "52": {"name": "Model Description (Any Apple)", "desc": "Descripción modelo cualquier Apple", "credits": 2},
-            "61": {"name": "Apple Demo Unit Device Info", "desc": "Info dispositivo demo Apple", "credits": 14},
-            "64": {"name": "Model Description - Emergency", "desc": "Descripción modelo emergencia", "credits": 1}
+            "1": {"name": "Find My iPhone [FMI] (ON/OFF)", "desc": "Verificar estado FMI", "credits": 0.03},
+            "2": {"name": "Warranty + Activation - PRO [IMEI/SN]", "desc": "Info de garantía profesional", "credits": 0.06},
+            "3": {"name": "Apple FULL INFO [No Carrier]", "desc": "Información completa sin carrier", "credits": 0.21},
+            "4": {"name": "iCloud Clean/Lost Check", "desc": "Estado de iCloud limpio/perdido", "credits": 0.06},
+            "9": {"name": "SOLD BY + GSX - UPDATED", "desc": "Info de venta + GSX actualizado", "credits": 5.07},
+            "12": {"name": "GSX Next Tether + iOS (GSX Carrier)", "desc": "GSX Carrier con iOS", "credits": 1.80},
+            "13": {"name": "Model + Color + Storage + FMI", "desc": "Modelo, color, almacenamiento y FMI", "credits": 0.06},
+            "18": {"name": "iMac FMI Status On/Off", "desc": "Estado FMI para iMac", "credits": 0.90},
+            "19": {"name": "Apple FULL INFO [+Carrier] B", "desc": "Info completa con carrier B", "credits": 0.36},
+            "20": {"name": "Apple SimLock Check", "desc": "Verificar bloqueo SIM", "credits": 0.06},
+            "22": {"name": "Apple BASIC INFO (PRO) - new", "desc": "Info básica profesional nueva", "credits": 0.12},
+            "23": {"name": "Apple Carrier Check (S2)", "desc": "Verificación de carrier S2", "credits": 0.12},
+            "33": {"name": "Replacement Status (Active Device)", "desc": "Estado de reemplazo dispositivo activo", "credits": 0.03},
+            "34": {"name": "Replaced Status (Original Device)", "desc": "Estado reemplazado dispositivo original", "credits": 0.03},
+            "39": {"name": "APPLE FULL INFO [+Carrier] A", "desc": "Info completa con carrier A", "credits": 0.30},
+            "41": {"name": "MDM Status ON/OFF", "desc": "Estado MDM activado/desactivado", "credits": 0.66},
+            "46": {"name": "MDM Status ON/OFF + GSX Policy + FMI", "desc": "MDM + política GSX + FMI", "credits": 1.35},
+            "47": {"name": "Apple FULL + MDM + GSMA PRO", "desc": "Info completa + MDM + GSMA Pro", "credits": 2.25},
+            "50": {"name": "Apple SERIAL Info(model,size,color)", "desc": "Info de serial Apple", "credits": 0.03},
+            "51": {"name": "Warranty + Activation [SN ONLY]", "desc": "Garantía + activación solo serial", "credits": 0.03},
+            "52": {"name": "Model Description (Any Apple SN/IMEI)", "desc": "Descripción modelo cualquier Apple", "credits": 0.06},
+            "61": {"name": "Apple Demo Unit Device Info", "desc": "Info dispositivo demo Apple", "credits": 0.42},
+            "64": {"name": "Model Description - Emergency", "desc": "Descripción modelo emergencia", "credits": 0.03}
         }
     },
     "samsung": {
         "name": "📱 Samsung",
         "emoji": "📱",
         "services": {
-            "8": {"name": "Samsung Info (S1)", "desc": "Información Samsung S1", "credits": 4},
-            "21": {"name": "Samsung INFO & KNOX STATUS (S2)", "desc": "Info Samsung + estado Knox S2", "credits": 14},
-            "36": {"name": "Samsung Info (S1) + Blacklist", "desc": "Info Samsung S1 + lista negra", "credits": 6},
-            "37": {"name": "Samsung Info & KNOX STATUS (S1)", "desc": "Info Samsung + Knox S1", "credits": 9}
+            "8": {"name": "Samsung Info (S1) (IMEI)", "desc": "Información Samsung S1", "credits": 0.12},
+            "21": {"name": "SAMSUNG INFO & KNOX STATUS (S2)", "desc": "Info Samsung + estado Knox S2", "credits": 0.42},
+            "36": {"name": "Samsung Info (S1) + Blacklist", "desc": "Info Samsung S1 + lista negra", "credits": 0.18},
+            "37": {"name": "Samsung Info & KNOX STATUS (S1)", "desc": "Info Samsung + Knox S1", "credits": 0.27}
         }
     },
     "carriers": {
         "name": "📡 Carriers US",
         "emoji": "📡",
         "services": {
-            "15": {"name": "T-mobile (ESN) PRO Check", "desc": "Verificación T-Mobile ESN", "credits": 4},
-            "16": {"name": "Verizon (ESN) Clean/Lost Status", "desc": "Estado Verizon limpio/perdido", "credits": 3}
+            "15": {"name": "T-mobile (ESN) PRO Check", "desc": "Verificación T-Mobile ESN", "credits": 0.12},
+            "16": {"name": "Verizon (ESN) Clean/Lost Status", "desc": "Estado Verizon limpio/perdido", "credits": 0.09}
         }
     },
     "chinese": {
         "name": "🏮 Chinese Brands",
         "emoji": "🏮",
         "services": {
-            "17": {"name": "Huawei IMEI Info", "desc": "Información Huawei", "credits": 7},
-            "25": {"name": "XIAOMI MI LOCK & INFO", "desc": "Bloqueo Mi e info Xiaomi", "credits": 5},
-            "27": {"name": "ONEPLUS IMEI INFO", "desc": "Información OnePlus", "credits": 4},
-            "58": {"name": "Honor Info", "desc": "Información Honor", "credits": 5},
-            "59": {"name": "Realme Info", "desc": "Información Realme", "credits": 3},
-            "60": {"name": "Oppo Info", "desc": "Información Oppo", "credits": 3}
+            "17": {"name": "Huawei IMEI Info", "desc": "Información Huawei", "credits": 0.21},
+            "25": {"name": "XIAOMI MI LOCK & INFO", "desc": "Bloqueo Mi e info Xiaomi", "credits": 0.15},
+            "27": {"name": "ONEPLUS IMEI INFO", "desc": "Información OnePlus", "credits": 0.12},
+            "58": {"name": "Honor Info", "desc": "Información Honor", "credits": 0.15},
+            "59": {"name": "Realme Info", "desc": "Información Realme", "credits": 0.09},
+            "60": {"name": "Oppo Info", "desc": "Información Oppo", "credits": 0.09}
         }
     },
     "other_brands": {
         "name": "📱 Other Brands",
         "emoji": "📱",
         "services": {
-            "57": {"name": "Google Pixel Info", "desc": "Información Google Pixel", "credits": 12},
-            "63": {"name": "Motorola Info", "desc": "Información Motorola", "credits": 5}
+            "57": {"name": "Google Pixel Info", "desc": "Información Google Pixel", "credits": 0.36},
+            "63": {"name": "Motorola Info", "desc": "Información Motorola", "credits": 0.15}
         }
     },
     "general": {
         "name": "🌐 Universal",
         "emoji": "🌐",
         "services": {
-            "5": {"name": "Blacklist Status (GSMA)", "desc": "Estado lista negra GSMA", "credits": 2},
-            "6": {"name": "Blacklist Pro Check (GSMA)", "desc": "Verificación profesional GSMA", "credits": 8},
-            "10": {"name": "IMEI to Model [all brands]", "desc": "IMEI a modelo todas las marcas", "credits": 1},
-            "11": {"name": "IMEI to Brand/Model/Name", "desc": "IMEI a marca/modelo/nombre", "credits": 1},
-            "14": {"name": "IMEI to SN (Full Convertor)", "desc": "Conversor completo IMEI a SN", "credits": 2},
-            "55": {"name": "Blacklist Status - cheap", "desc": "Estado lista negra económico", "credits": 1},
-            "62": {"name": "EID INFO (IMEI TO EID)", "desc": "Información EID desde IMEI", "credits": 2}
+            "5": {"name": "Blacklist Status (GSMA)", "desc": "Estado lista negra GSMA", "credits": 0.06},
+            "6": {"name": "Blacklist Pro Check (GSMA)", "desc": "Verificación profesional GSMA", "credits": 0.24},
+            "10": {"name": "IMEI to Model [all brands][IMEI/SN]", "desc": "IMEI a modelo todas las marcas", "credits": 0.03},
+            "11": {"name": "IMEI to Brand/Model/Name", "desc": "IMEI a marca/modelo/nombre", "credits": 0.03},
+            "14": {"name": "IMEI to SN (Full Convertor)", "desc": "Conversor completo IMEI a SN", "credits": 0.06},
+            "55": {"name": "Blacklist Status - cheap", "desc": "Estado lista negra económico", "credits": 0.03},
+            "62": {"name": "EID INFO (IMEI TO EID)", "desc": "Información EID desde IMEI", "credits": 0.06}
         }
     }
 }
+
 
 # =================== LOGGING PERSONALIZADO ===================
 class MemoryLogHandler(logging.Handler):

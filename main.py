@@ -361,8 +361,8 @@ def format_device_info(raw_data):
     field_order = [
         'Model Description', 'Model', 'Network', 'IMEI Number', 'IMEI', 'IMEI2 Number', 'IMEI2',
         'MEID', 'Serial Number', 'Warranty Status', 'Estimated Purchase Date', 'Purchase Date',
-        'Purchase Country', 'Repairs and Service Coverage', 'Replaced by Apple', 'Replaced Device',
-        'Replacement Device', 'Refurbished', 'Demo Unit', 'Find My iPhone', 'FMI', 'iCloud Status',
+        'Purchase Country', 'Repairs and Service Coverage', 'Replaced by Apple', 'Replacement Device',
+        'Refurbished', 'Demo Unit', 'Find My iPhone', 'FMI', 'iCloud Status',
         'US Block Status', 'Blacklist Status', 'GSMA Status', 'SIM-Lock Status', 'Sim-Lock Status',
         'Locked Carrier', 'Knox Status', 'Activation Status', 'MDM Status', 'Color', 'Storage', 'Capacity'
     ]
@@ -444,18 +444,56 @@ def format_error_response(service_name, imei, error):
 # =================== MENÚS ===================
 def create_main_menu():
     markup = types.InlineKeyboardMarkup(row_width=2)
-    for key, category in SERVICES.items():
-        markup.add(types.InlineKeyboardButton(f"{category['emoji']} {category['name']} ({len(category['services'])})", callback_data=f"cat_{key}"))
-    markup.add(types.InlineKeyboardButton("💳 Mis Créditos", callback_data="credits"))
-    markup.add(types.InlineKeyboardButton("❓ Ayuda", callback_data="help"))
+    
+    # Botones con emojis y descripción mejorada
+    buttons = [
+        ("🍎 Apple", "cat_apple", "Servicios exclusivos Apple"),
+        ("📱 Samsung", "cat_samsung", "Verificación Samsung y Knox"),
+        ("📡 Carriers US", "cat_carriers", "Operadores americanos"),
+        ("🏮 Chinese", "cat_chinese", "Marcas chinas"),
+        ("📱 Otros", "cat_other_brands", "Otras marcas"),
+        ("🌐 Universal", "cat_general", "Servicios universales")
+    ]
+    
+    # Crear botones con formato mejorado
+    for emoji, callback, desc in buttons:
+        btn_text = f"{emoji} {desc.split()[0]}"
+        markup.add(types.InlineKeyboardButton(btn_text, callback_data=callback))
+    
+    # Botones de utilidad
+    markup.row(
+        types.InlineKeyboardButton("💳 Mis Créditos", callback_data="credits"),
+        types.InlineKeyboardButton("❓ Ayuda & Soporte", callback_data="help")
+    )
+    
+    # Botón de contacto
+    markup.row(types.InlineKeyboardButton("📞 Contactar Soporte", url="https://t.me/IaldazSupport"))
+    
     return markup
 
 def create_category_menu(category_key):
     markup = types.InlineKeyboardMarkup(row_width=1)
     category = SERVICES[category_key]
+    
+    # Header mejorado para la categoría
+    category_emojis = {
+        "apple": "🍎", "samsung": "📱", "carriers": "📡", 
+        "chinese": "🏮", "other_brands": "📱", "general": "🌐"
+    }
+    
+    emoji = category_emojis.get(category_key, "🔍")
+    
     for service_id, service in category["services"].items():
-        markup.add(types.InlineKeyboardButton(f"• {service['name']} ({service['credits']}💳)", callback_data=f"svc_{service_id}"))
-    markup.add(types.InlineKeyboardButton("🔙 Menú Principal", callback_data="main_menu"))
+        # Formato mejorado para los servicios
+        button_text = f"{emoji} {service['name']} - {service['credits']}💳"
+        markup.add(types.InlineKeyboardButton(button_text, callback_data=f"svc_{service_id}"))
+    
+    # Botones de navegación mejorados
+    markup.row(
+        types.InlineKeyboardButton("⬅️ Menú Principal", callback_data="main_menu"),
+        types.InlineKeyboardButton("💳 Ver Créditos", callback_data="credits")
+    )
+    
     return markup
 
 def edit_message(call, text, markup=None):
@@ -474,7 +512,32 @@ def start_command(message):
         add_activity_log(user_id, "START", "Usuario inició bot")
         
         if not is_authorized(user_id):
-            bot.send_message(message.chat.id, f"🔒 Acceso no autorizado. Tu ID: {user_id}", parse_mode='Markdown')
+            # Mensaje mejorado y más amigable
+            welcome_text = f"""
+🌟 *Bienvenido a IaldazCheck Bot* 🌟
+
+🔒 *Acceso no autorizado* - Tu ID: `{user_id}`
+
+📋 *¿Qué es este bot?*
+Somos un servicio premium de verificación de dispositivos mediante IMEI/Serial.
+
+💡 *¿Necesitas acceso?*
+• Contacta al administrador
+• Proporciona tu ID de usuario
+• Solicita tu plan de créditos
+
+⚡ *Servicios disponibles:*
+• ✅ Verificación Apple (FMI, Garantía, iCloud)
+• ✅ Información Samsung y Knox
+• ✅ Chequeo de operadores (T-Mobile, Verizon)
+• ✅ Marcas chinas (Huawei, Xiaomi, OnePlus)
+• ✅ Y muchos más...
+
+📞 *Contacto:* @IaldazSupport
+🌐 *Web:* exclusiveunlock.com
+            """
+            
+            bot.send_message(message.chat.id, welcome_text, parse_mode='Markdown')
             return
         
         user_info = get_user_info(user_id)
@@ -564,10 +627,14 @@ def handle_callback(call):
                     'waiting_for_imei': True
                 }
                 
-                text = f"🔍 **{service_info['name']}**\n\n"
-                text += f"💳 Costo: {service_info['credits']} créditos\n"
-                text += f"📝 {service_info['desc']}\n\n"
-                text += "📱 Envía el IMEI/Serial número:"
+                # Mensaje mejorado para solicitar IMEI
+                text = f"🎯 *{service_info['name']}*\n\n"
+                text += f"💳 *Costo:* {service_info['credits']} créditos\n"
+                text += f"📋 *Descripción:* {service_info['desc']}\n\n"
+                text += "🔍 *Por favor, envía el IMEI/Serial número:*\n"
+                text += "• Formato: 15 dígitos (IMEI) o 8-20 caracteres (Serial)\n"
+                text += "• Ejemplo: `123456789012345`\n\n"
+                text += "⚡ *Procesamiento instantáneo*"
                 
                 bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
         
@@ -581,18 +648,37 @@ def handle_callback(call):
         
         elif data == "help":
             add_activity_log(user_id, "HELP", "Solicitó ayuda")
-            text = """❓ **AYUDA**
+            user_info = get_user_info(user_id)
+            credits_text = "Ilimitados ♾️" if user_info["credits"] == -1 else f"{user_info['credits']} 💎"
+            
+            text = f"""🤖 *CENTRO DE AYUDA - IaldazCheck Bot* 🤖
 
-🔹 Selecciona una categoría de servicios
-🔹 Elige el servicio que necesitas
-🔹 Envía el IMEI/Serial del dispositivo
-🔹 Recibe el resultado al instante
+✨ *¿Cómo usar el bot?*
+1. 🔍 Selecciona una categoría de servicios
+2. 🎯 Elige el servicio que necesitas
+3. 📱 Envía el IMEI/Serial del dispositivo
+4. ⚡ Recibe el resultado al instante
 
-💡 **Formatos válidos:**
-• IMEI: 15 dígitos
-• Serial: 8-20 caracteres
+💡 *Formatos válidos:*
+• 📟 IMEI: 15 dígitos numéricos
+• 🔢 Serial: 8-20 caracteres alfanuméricos
 
-⚠️ Los créditos solo se debitan si la consulta es exitosa"""
+⚠️ *Información importante:*
+• Los créditos solo se debitan si la consulta es exitosa
+• Consultas fallidas no consumen créditos
+• Soporte técnico disponible 24/7
+
+🎯 *Servicios disponibles:*
+• 🍎 Apple (FMI, Garantía, iCloud)
+• 📱 Samsung (Info, Knox, Blacklist)
+• 📡 Carriers US (T-Mobile, Verizon)
+• 🏮 Marcas Chinas (Huawei, Xiaomi, etc.)
+• 🌐 Servicios Universales
+
+📞 *Soporte:* @IaldazSupport
+🌐 *Web:* exclusiveunlock.com
+💎 *Créditos restantes:* {credits_text}"""
+            
             edit_message(call, text, types.InlineKeyboardMarkup().add(
                 types.InlineKeyboardButton("🔙 Menú Principal", callback_data="main_menu")))
         

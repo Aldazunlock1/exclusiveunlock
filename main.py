@@ -1645,7 +1645,7 @@ if __name__ == "__main__":
                 use_reloader=False
             ), daemon=True)
             flask_thread.start()
-            logger.info(f"📊 Panel local disponible en: http://localhost:{PORT}")
+            logger.info(f"📊 Panel local disponible en: https://exclusiveunlock-m4o8.onrender.com:{PORT}")
             
             bot.remove_webhook()
             logger.info("✅ Webhook removido, iniciando polling...")
